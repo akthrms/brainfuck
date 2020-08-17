@@ -14,40 +14,40 @@
   (nth @memory @pointer))
 
 ; メモリ・ポインタ・文字位置を初期化する
-(defn- init []
+(defn- initial []
   (do
     (reset! memory (vec (repeat 512 0)))
     (reset! pointer 0)
     (reset! index 0)))
 
-(defmulti exec-command (fn [c _] (identity c)))
+(defmulti execute (fn [c _] (identity c)))
 
 ; ポインタを加算する
-(defmethod exec-command \> [& _]
+(defmethod execute \> [& _]
   (swap! pointer inc))
 
 ; ポインタを減算する
-(defmethod exec-command \< [& _]
+(defmethod execute \< [& _]
   (swap! pointer dec))
 
 ; ポインタが指す値を加算する
-(defmethod exec-command \+ [& _]
+(defmethod execute \+ [& _]
   (swap! memory assoc @pointer (inc (get-reference))))
 
 ; ポインタが指す値を減算する
-(defmethod exec-command \- [& _]
+(defmethod execute \- [& _]
   (swap! memory assoc @pointer (dec (get-reference))))
 
 ; ポインタが指す値を出力する
-(defmethod exec-command \. [& _]
+(defmethod execute \. [& _]
   (print (char (get-reference))))
 
 ; ポインタが指す値に入力する
-(defmethod exec-command \, [& _]
+(defmethod execute \, [& _]
   (swap! memory assoc @pointer (read)))
 
 ; ループを開始する
-(defmethod exec-command \[ [_ file-chars]
+(defmethod execute \[ [_ file-chars]
   (when (zero? (get-reference))
     (loop [bracket-count 1]
       (when (> bracket-count 0)
@@ -59,7 +59,7 @@
             (recur bracket-count)))))))
 
 ; ループを終了する
-(defmethod exec-command \] [_ file-chars]
+(defmethod execute \] [_ file-chars]
   (when (not (zero? (get-reference)))
     (loop [bracket-count 1]
       (when (> bracket-count 0)
@@ -71,16 +71,16 @@
             (recur bracket-count)))))))
 
 ; それ以外はスキップする
-(defmethod exec-command :default [& _])
+(defmethod execute :default [& _])
 
 ; メイン
 (defn -main [filename & _]
   (do
-    (init)
+    (initial)
     (with-open [reader (clojure.java.io/reader filename)]
       (let [file-chars (vec (clojure.string/join "\n" (line-seq reader)))]
         (loop [i @index]
           (when (> (count file-chars) i)
-            (exec-command (nth file-chars i) file-chars)
+            (execute (nth file-chars i) file-chars)
             (swap! index inc)
             (recur @index)))))))
