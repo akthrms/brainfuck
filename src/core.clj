@@ -78,7 +78,9 @@
   (do
     (initial)
     (with-open [reader (clojure.java.io/reader filename)]
-      (let [file-chars (vec (clojure.string/join "\n" (line-seq reader)))]
+      (let [file-chars (->> (line-seq reader)
+                            (clojure.string/join "\n")
+                            (vec))]
         (loop [i @index]
           (when (> (count file-chars) i)
             (execute (nth file-chars i) file-chars)
