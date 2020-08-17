@@ -73,16 +73,20 @@
 ; それ以外はスキップする
 (defmethod execute :default [& _])
 
+; 実行
+(defn- run [file-chars]
+  (loop [i @index]
+    (when (> (count file-chars) i)
+      (execute (nth file-chars i) file-chars)
+      (swap! index inc)
+      (recur @index))))
+
 ; メイン
 (defn -main [filename & _]
   (do
     (initial)
     (with-open [reader (clojure.java.io/reader filename)]
-      (let [file-chars (->> (line-seq reader)
-                            (clojure.string/join "\n")
-                            (vec))]
-        (loop [i @index]
-          (when (> (count file-chars) i)
-            (execute (nth file-chars i) file-chars)
-            (swap! index inc)
-            (recur @index)))))))
+      (->> (line-seq reader)
+           (clojure.string/join "\n")
+           (vec)
+           (run)))))
