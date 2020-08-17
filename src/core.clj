@@ -20,7 +20,7 @@
     (reset! pointer 0)
     (reset! index 0)))
 
-(defmulti exec-command identity)
+(defmulti exec-command (fn [c _] (identity c)))
 
 ; ポインタを加算する
 (defmethod exec-command \> [& _]
