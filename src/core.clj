@@ -20,7 +20,7 @@
     (reset! pointer 0)
     (reset! index 0)))
 
-(defmulti execute (fn [c _] (identity c)))
+(defmulti execute (fn [file-chars idx] (identity (nth file-chars idx))))
 
 ; ポインタを加算する
 (defmethod execute \> [& _]
@@ -47,7 +47,7 @@
   (swap! memory assoc @pointer (read)))
 
 ; ループを開始する
-(defmethod execute \[ [_ file-chars]
+(defmethod execute \[ [file-chars _]
   (when (zero? (get-reference))
     (loop [bracket-count 1]
       (when (> bracket-count 0)
@@ -59,7 +59,7 @@
             (recur bracket-count)))))))
 
 ; ループを終了する
-(defmethod execute \] [_ file-chars]
+(defmethod execute \] [file-chars _]
   (when (not (zero? (get-reference)))
     (loop [bracket-count 1]
       (when (> bracket-count 0)
@@ -75,9 +75,9 @@
 
 ; 実行
 (defn- run [file-chars]
-  (loop [i @index]
-    (when (> (count file-chars) i)
-      (execute (nth file-chars i) file-chars)
+  (loop [idx @index]
+    (when (> (count file-chars) idx)
+      (execute file-chars idx)
       (swap! index inc)
       (recur @index))))
 
