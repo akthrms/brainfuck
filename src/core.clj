@@ -1,5 +1,5 @@
 (ns core
-  (:require [brainfuck.core :refer [reset run]]))
+  (:require [brainfuck.core :refer [reset exec]]))
 
 (defn -main [filename & _]
   (do
@@ -8,4 +8,4 @@
       (->> (line-seq reader)
            (clojure.string/join "\n")
            (vec)
-           (run)))))
+           (exec)))))
