@@ -1,11 +1,11 @@
 (ns core
-  (:require [brainfuck.core :refer [reset exec]]))
+  (:require [brainfuck.core :as brainfuck]))
 
 (defn -main [filename & _]
   (do
-    (reset)
+    (brainfuck/reset)
     (with-open [reader (clojure.java.io/reader filename)]
       (->> (line-seq reader)
            (clojure.string/join "\n")
            (vec)
-           (exec)))))
+           (brainfuck/exec)))))

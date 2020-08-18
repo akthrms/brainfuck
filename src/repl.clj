@@ -1,5 +1,5 @@
 (ns repl
-  (:require [brainfuck.core :refer [reset exec]]))
+  (:require [brainfuck.core :as brainfuck]))
 
 (defn- print-with-flush [msg]
   (do
@@ -9,12 +9,12 @@
 (defn -main [& _]
   (loop []
     (do
-      (reset)
+      (brainfuck/reset)
       (print-with-flush "brainf*ck> ")
       (let [prompt (read-line)]
         (if (= prompt "exit")
           (print-with-flush "")
           (do
-            (exec (vec prompt))
+            (brainfuck/exec (vec prompt))
             (print-with-flush "\n")
             (recur)))))))
